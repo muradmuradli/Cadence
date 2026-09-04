@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1788532833955,
+      "tag": "0000_brainy_captain_universe",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788533072081,
+      "tag": "0001_add_s3_object_key",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788533081794,
+      "tag": "0002_drop_r2_object_key",
+      "breakpoints": true
+    }
+  ]
+}
