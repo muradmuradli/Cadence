@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   BookOpen,
   Clapperboard,
@@ -209,9 +210,12 @@ export function DashboardView() {
                   <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
                     {a.desc}
                   </p>
-                  <button className="mt-5 flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-semibold transition-colors group-hover:border-acid group-hover:bg-acid group-hover:text-acid-foreground">
+                  <Link
+                    href={`/text-to-speech?text=${encodeURIComponent(text)}`}
+                    className="mt-5 flex w-full cursor-pointer items-center justify-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-semibold transition-colors group-hover:border-acid group-hover:bg-acid group-hover:text-acid-foreground"
+                  >
                     Try now
-                  </button>
+                  </Link>
                 </div>
               );
             })}

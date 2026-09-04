@@ -120,38 +120,44 @@ export function AuthForm() {
   const isSubmitting = typedForm.formState.isSubmitting;
 
   const onSubmit = typedForm.handleSubmit(async (data) => {
-    if (mode === "in") {
-      const { error } = await authClient.signIn.email({
+    try {
+      if (mode === "in") {
+        const { error } = await authClient.signIn.email({
+          email: data.email,
+          password: data.password,
+        });
+
+        if (error) {
+          toast.error(error.message ?? "Invalid email or password");
+          return;
+        }
+
+        router.push("/dashboard");
+        return;
+      }
+
+      const { data: signUpData, error } = await authClient.signUp.email({
         email: data.email,
         password: data.password,
+        name: data.name,
       });
 
       if (error) {
-        toast.error("Invalid email or password");
+        toast.error(error.message ?? "Something went wrong. Try again.");
+        return;
+      }
+
+      if (signUpData?.user && !signUpData.user.emailVerified) {
+        router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);
         return;
       }
 
       router.push("/dashboard");
-      return;
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Something went wrong. Try again.",
+      );
     }
-
-    const { data: signUpData, error } = await authClient.signUp.email({
-      email: data.email,
-      password: data.password,
-      name: data.name,
-    });
-
-    if (error) {
-      toast.error(error.message ?? "Something went wrong. Try again.");
-      return;
-    }
-
-    if (signUpData?.user && !signUpData.user.emailVerified) {
-      router.push(`/verify-email?email=${encodeURIComponent(data.email)}`);
-      return;
-    }
-
-    router.push("/dashboard");
   });
 
   return (
