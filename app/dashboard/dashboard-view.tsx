@@ -135,11 +135,11 @@ export function DashboardView() {
                 Resonant Studio · 0:12
               </h2>
             </div>
-            <div className="flex items-center gap-2">
-              <button className="flex cursor-pointer items-center gap-2 rounded-full border border-border px-4 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground">
+            <div className="flex flex-wrap items-center gap-2">
+              <button className="flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap rounded-full border border-border px-4 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground">
                 <RotateCcw className="h-4 w-4" /> Regenerate
               </button>
-              <button className="flex cursor-pointer items-center gap-2 rounded-full bg-acid px-5 py-2 text-sm font-bold text-acid-foreground">
+              <button className="flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap rounded-full bg-acid px-5 py-2 text-sm font-bold text-acid-foreground">
                 <Download className="h-4 w-4" /> Download WAV
               </button>
             </div>
@@ -157,13 +157,22 @@ export function DashboardView() {
                 <Play className="ml-1 h-6 w-6" />
               )}
             </button>
-            <div className="h-24 flex-1">
+            <div className="h-20 min-w-0 flex-1 sm:h-24">
+              <Waveform
+                seed={4}
+                bars={36}
+                active={playing}
+                progress={playing ? 1 : 0.42}
+                tone="magenta"
+                className="sm:hidden"
+              />
               <Waveform
                 seed={4}
                 bars={90}
                 active={playing}
                 progress={playing ? 1 : 0.42}
                 tone="magenta"
+                className="hidden sm:flex"
               />
             </div>
           </div>
