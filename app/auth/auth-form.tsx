@@ -1,12 +1,10 @@
 "use client";
 
-import { startTransition, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AudioLines, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { Waveform } from "@/components/waveform";
-import { useActionState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { AuthState, signIn } from "./actions";
 import { authClient } from "@/lib/auth/client";
 import {
   SignInFormValues,
@@ -17,8 +15,6 @@ import {
 import { FieldValues, useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-
-const initialState: AuthState = {};
 
 function Field({
   label,
@@ -85,17 +81,6 @@ export function AuthForm() {
 
   const [mode, setMode] = useState<"in" | "up">("in");
 
-  const [signInState, signInAction, signInPending] = useActionState(
-    signIn,
-    initialState,
-  );
-
-  useEffect(() => {
-    if (signInState.error) {
-      toast.error(signInState.error);
-    }
-  }, [signInState]);
-
   useEffect(() => {
     if (
       searchParams.get("verified") === "true" &&
@@ -132,18 +117,21 @@ export function AuthForm() {
 
   const form = mode === "in" ? signInForm : signUpForm;
   const typedForm = form as unknown as UseFormReturn<FieldValues>;
-  const isSignUpSubmitting = typedForm.formState.isSubmitting;
-  const isPending = mode === "in" ? signInPending : isSignUpSubmitting;
+  const isSubmitting = typedForm.formState.isSubmitting;
 
   const onSubmit = typedForm.handleSubmit(async (data) => {
     if (mode === "in") {
-      const formData = new FormData();
-      Object.entries(data).forEach(([key, value]) => {
-        formData.append(key, String(value));
+      const { error } = await authClient.signIn.email({
+        email: data.email,
+        password: data.password,
       });
-      startTransition(() => {
-        signInAction(formData);
-      });
+
+      if (error) {
+        toast.error("Invalid email or password");
+        return;
+      }
+
+      router.push("/dashboard");
       return;
     }
 
@@ -288,14 +276,14 @@ export function AuthForm() {
 
             <button
               type="submit"
-              disabled={isPending}
+              disabled={isSubmitting}
               className="group flex w-full items-center justify-between gap-3 rounded-full bg-acid px-6 py-3.5 font-display text-base font-bold text-acid-foreground transition-transform hover:scale-[1.02] disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {mode === "in"
-                ? signInPending
+                ? isSubmitting
                   ? "Signing in..."
                   : "Sign in"
-                : isSignUpSubmitting
+                : isSubmitting
                   ? "Creating account..."
                   : "Create account"}
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
