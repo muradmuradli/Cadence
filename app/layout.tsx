@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Bricolage_Grotesque, DM_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import { Providers } from "./providers";
 
 const bricolageGrotesque = Bricolage_Grotesque({
   variable: "--font-bricolage",
@@ -20,7 +21,10 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Cadence — Synthetic Voice Lab",
+  title: {
+    default: "Cadence",
+    template: "%s | Cadence",
+  },
   description:
     "Twenty-four studio voices, instant cloning, and renders that sound like they were tracked in a booth.",
 };
@@ -35,8 +39,10 @@ export default function RootLayout({
       <body
         className={`${bricolageGrotesque.variable} ${dmSans.variable} ${ibmPlexMono.variable} antialiased`}
       >
-        {children}
-        <Toaster />
+        <Providers>
+          {children}
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );
