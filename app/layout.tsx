@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Bricolage_Grotesque, DM_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
-import { Providers } from "./providers";
+import { TRPCReactProvider } from "@/trpc/client";
 
 const bricolageGrotesque = Bricolage_Grotesque({
   variable: "--font-bricolage",
@@ -39,10 +39,10 @@ export default function RootLayout({
       <body
         className={`${bricolageGrotesque.variable} ${dmSans.variable} ${ibmPlexMono.variable} antialiased`}
       >
-        <Providers>
+        <TRPCReactProvider>
           {children}
           <Toaster />
-        </Providers>
+        </TRPCReactProvider>
       </body>
     </html>
   );
