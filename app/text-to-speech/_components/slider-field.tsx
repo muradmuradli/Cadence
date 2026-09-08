@@ -1,12 +1,13 @@
 "use client";
 
-import { useWatch } from "react-hook-form";
+import { useSelector } from "@tanstack/react-form";
 import type { Slider } from "@/lib/constants/sliders";
-import { useTextToSpeech } from "./text-to-speech-context";
+import { useTypedAppFormContext } from "@/hooks/use-app-form";
+import { ttsFormOptions } from "../text-to-speech-form";
 
 export function SliderField({ slider }: { slider: Slider }) {
-  const { form } = useTextToSpeech();
-  const value = useWatch({ control: form.control, name: slider.id });
+  const form = useTypedAppFormContext(ttsFormOptions);
+  const value = useSelector(form.store, (s) => s.values[slider.id]);
 
   return (
     <div>
@@ -22,7 +23,10 @@ export function SliderField({ slider }: { slider: Slider }) {
         min={slider.min}
         max={slider.max}
         step={slider.step}
-        {...form.register(slider.id, { valueAsNumber: true })}
+        value={value}
+        onChange={(e) =>
+          form.setFieldValue(slider.id, e.target.valueAsNumber)
+        }
       />
       <div className="mt-2 flex justify-between font-mono text-[0.65rem] uppercase tracking-widest text-muted-foreground">
         <span>{slider.leftLabel}</span>

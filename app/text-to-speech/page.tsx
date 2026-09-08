@@ -1,17 +1,22 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { TextToSpeechView } from "./text-to-speech-view";
+import { trpc, HydrateClient, prefetch } from "@/trpc/server";
 
-export const metadata: Metadata = {
-  title: "Text to Speech",
-  description:
-    "Write a script, tune creativity, variety, expression and flow, then render lifelike speech instantly.",
-};
+export const metadata: Metadata = { title: "Text to Speech" };
 
-export default function TextToSpeechPage() {
+export default async function TextToSpeechPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ text?: string; voiceId?: string }>;
+}) {
+  const { text, voiceId } = await searchParams;
+
+  prefetch(trpc.voices.getAll.queryOptions());
+  // prefetch(trpc.generations.getAll.queryOptions());
+
   return (
-    <Suspense>
-      <TextToSpeechView />
-    </Suspense>
+    <HydrateClient>
+      <TextToSpeechView initialValues={{ text, voiceId }} />
+    </HydrateClient>
   );
 }

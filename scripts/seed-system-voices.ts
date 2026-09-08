@@ -8,7 +8,7 @@ import { and, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { voice, type VoiceCategory } from "@/lib/db/schema";
 import { uploadAudio } from "@/lib/s3";
-import { CANONICAL_SYSTEM_VOICE_NAMES } from "@/voices/data/voice-scoping";
+import { CANONICAL_SYSTEM_VOICE_NAMES } from "@/lib/constants/voice-scoping";
 
 const SYSTEM_VOICES_DIR = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
