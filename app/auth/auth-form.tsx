@@ -11,7 +11,7 @@ import {
   SignUpFormValues,
   signInSchema,
   signUpSchema,
-} from "@/lib/schemas/auth";
+} from "@/lib/validations/auth";
 import { FieldValues, useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";

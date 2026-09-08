@@ -11,7 +11,7 @@ import { Waveform } from "@/components/waveform";
 import {
   ForgotPasswordFormValues,
   forgotPasswordSchema,
-} from "@/lib/schemas/auth";
+} from "@/lib/validations/auth";
 
 export default function ForgotPasswordPage() {
   const [isSent, setIsSent] = useState(false);

@@ -27,6 +27,8 @@ export const voiceCategoryEnum = pgEnum("voice_category", [
   "CORPORATE",
 ]);
 
+export type VoiceCategory = (typeof voiceCategoryEnum.enumValues)[number];
+
 export const voice = pgTable(
   "voice",
   {

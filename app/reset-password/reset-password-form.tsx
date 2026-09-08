@@ -12,7 +12,7 @@ import { Waveform } from "@/components/waveform";
 import {
   ResetPasswordFormValues,
   resetPasswordSchema,
-} from "@/lib/schemas/auth";
+} from "@/lib/validations/auth";
 
 function PasswordField({
   label,

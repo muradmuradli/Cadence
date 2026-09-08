@@ -9,7 +9,7 @@ import { sliders, type Slider } from "@/lib/constants/sliders";
 import {
   textToSpeechSchema,
   type TextToSpeechFormValues,
-} from "@/lib/schemas/text-to-speech";
+} from "@/lib/validations/text-to-speech";
 
 const defaultSliderValues = Object.fromEntries(
   sliders.map((s) => [s.id, s.defaultValue]),
