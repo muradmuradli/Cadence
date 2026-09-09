@@ -3,7 +3,7 @@
 import { useSelector } from "@tanstack/react-form";
 import type { Slider } from "@/lib/constants/sliders";
 import { useTypedAppFormContext } from "@/hooks/use-app-form";
-import { ttsFormOptions } from "../text-to-speech-form";
+import { ttsFormOptions } from "../_state/text-to-speech-form";
 
 export function SliderField({ slider }: { slider: Slider }) {
   const form = useTypedAppFormContext(ttsFormOptions);

@@ -5,7 +5,7 @@ import { useSelector } from "@tanstack/react-form";
 import { WaveLine } from "@/components/waveform";
 import { COST_PER_UNIT, TEXT_MAX_LENGTH } from "@/lib/constants/values";
 import { useTypedAppFormContext } from "@/hooks/use-app-form";
-import { ttsFormOptions } from "../text-to-speech-form";
+import { ttsFormOptions } from "../_state/text-to-speech-form";
 
 export function ScriptPanel() {
   const form = useTypedAppFormContext(ttsFormOptions);

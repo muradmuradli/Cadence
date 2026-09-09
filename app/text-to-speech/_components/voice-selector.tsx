@@ -17,8 +17,8 @@ import {
 import { useTypedAppFormContext } from "@/hooks/use-app-form";
 import { VoiceAvatar } from "@/components/voice-avatar/voice-avatar";
 
-import { useTTSVoices } from "../tts-voices-context";
-import { ttsFormOptions } from "../text-to-speech-form";
+import { useTTSVoices } from "../_state/tts-voices-context";
+import { ttsFormOptions } from "../_state/text-to-speech-form";
 
 export function VoiceSelector() {
   const { customVoices, systemVoices, allVoices: voices } = useTTSVoices();

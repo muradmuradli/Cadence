@@ -11,8 +11,8 @@ import {
   TextToSpeechForm,
   defaultTTSValues,
   type TTSFormValues,
-} from "./text-to-speech-form";
-import { TTSVoicesProvider } from "./tts-voices-context";
+} from "./_state/text-to-speech-form";
+import { TTSVoicesProvider } from "./_state/tts-voices-context";
 
 export function TextToSpeechView({
   initialValues,
