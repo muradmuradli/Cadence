@@ -65,9 +65,7 @@ function Field({
         )}
       </div>
       {error && (
-        <p className="mt-1.5 text-xs text-magenta">
-          {error.message as string}
-        </p>
+        <p className="mt-1.5 text-xs text-magenta">{error.message as string}</p>
       )}
     </label>
   );
@@ -95,7 +93,9 @@ export function AuthForm() {
   useEffect(() => {
     if (searchParams.get("reset") === "true" && !hasShownResetToast.current) {
       hasShownResetToast.current = true;
-      toast.success("Password reset! You can now sign in with your new password.");
+      toast.success(
+        "Password reset! You can now sign in with your new password.",
+      );
       router.replace("/auth");
     }
   }, [searchParams, router]);
@@ -243,7 +243,7 @@ export function AuthForm() {
                 type="text"
                 label="Name"
                 name="name"
-                placeholder="Helen Kellner"
+                placeholder="Your Name"
               />
             )}
             <Field
