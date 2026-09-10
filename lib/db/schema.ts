@@ -1,6 +1,7 @@
 import { createId } from "@paralleldrive/cuid2";
 import { relations } from "drizzle-orm";
 import {
+  boolean,
   doublePrecision,
   index,
   integer,
@@ -87,6 +88,40 @@ export const generation = pgTable(
   (table) => [
     index("generation_org_id_idx").on(table.orgId),
     index("generation_voice_id_idx").on(table.voiceId),
+  ],
+);
+
+// Generic, reusable notification feed - deliberately knows nothing about
+// what it's notifying about beyond `type` (used to route UI behavior, e.g.
+// opening the invitations modal) and `referenceId` (a pointer to whatever
+// entity that type refers to - the better-auth invitation id for
+// ORGANIZATION_INVITE). Users live in Neon Auth's own store, not this
+// database, so recipientEmail is a plain unforeign-keyed reference to that,
+// same as voice.orgId / generation.orgId - and it's email rather than a
+// userId because that's the only identifier we can resolve for an arbitrary
+// recipient without admin API access.
+export const notificationTypeEnum = pgEnum("notification_type", [
+  "ORGANIZATION_INVITE",
+]);
+
+export const notification = pgTable(
+  "notification",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => createId()),
+
+    recipientEmail: text("recipient_email").notNull(),
+    type: notificationTypeEnum("type").notNull(),
+    message: text("message").notNull(),
+    referenceId: text("reference_id"),
+    read: boolean("read").notNull().default(false),
+
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("notification_recipient_email_idx").on(table.recipientEmail),
+    index("notification_reference_id_idx").on(table.referenceId),
   ],
 );
 

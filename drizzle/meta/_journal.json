@@ -22,6 +22,27 @@
       "when": 1788533081794,
       "tag": "0002_drop_r2_object_key",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1790406467714,
+      "tag": "0003_misty_mathemanic",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790407016826,
+      "tag": "0004_certain_old_lace",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790407032385,
+      "tag": "0005_steep_eternals",
+      "breakpoints": true
     }
   ]
 }

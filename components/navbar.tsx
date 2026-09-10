@@ -7,6 +7,7 @@ import {
   AudioLines,
   HelpCircle,
   LogOut,
+  Mail,
   Menu,
   Settings,
   X,
@@ -14,6 +15,9 @@ import {
 import { authClient } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { OrgSwitcher } from "@/components/org-switcher";
+import { NotificationsDropdown } from "@/components/notifications-dropdown";
+import { InvitationsDialog } from "@/components/invitations-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,6 +47,7 @@ export function Navbar() {
   const router = useRouter();
   const { data: session } = authClient.useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [invitationsOpen, setInvitationsOpen] = useState(false);
 
   const user = session?.user;
   const initial = (user?.name || user?.email || "?").charAt(0).toUpperCase();
@@ -81,7 +86,7 @@ export function Navbar() {
             })}
           </nav>
 
-          <div className="hidden md:block">
+          <div className="hidden items-center gap-3 md:flex">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
@@ -111,6 +116,13 @@ export function Navbar() {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="cursor-pointer gap-2"
+                  onSelect={() => setInvitationsOpen(true)}
+                >
+                  <Mail className="h-4 w-4" />
+                  Invitations
+                </DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer gap-2">
                   <Settings className="h-4 w-4" />
                   Settings
@@ -130,7 +142,17 @@ export function Navbar() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            <OrgSwitcher />
+            <NotificationsDropdown
+              onOpenInvitations={() => setInvitationsOpen(true)}
+            />
           </div>
+
+          <NotificationsDropdown
+            onOpenInvitations={() => setInvitationsOpen(true)}
+            className="md:hidden"
+          />
 
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
@@ -184,6 +206,10 @@ export function Navbar() {
                   </div>
                 </div>
 
+                <div className="border-b border-border/70 py-4">
+                  <OrgSwitcher variant="prominent" />
+                </div>
+
                 <nav className="flex flex-col gap-1 py-4">
                   {navItems.map((item) => {
                     const active = pathname === item.href;
@@ -206,6 +232,15 @@ export function Navbar() {
                 </nav>
 
                 <div className="mt-auto flex flex-col gap-1 border-t border-border/70 py-4">
+                  <SheetClose asChild>
+                    <button
+                      onClick={() => setInvitationsOpen(true)}
+                      className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-3 text-left text-base font-medium text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground"
+                    >
+                      <Mail className="h-4 w-4" />
+                      Invitations
+                    </button>
+                  </SheetClose>
                   <SheetClose asChild>
                     <button className="flex cursor-pointer items-center gap-2 rounded-lg px-3 py-3 text-left text-base font-medium text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground">
                       <Settings className="h-4 w-4" />
@@ -233,6 +268,11 @@ export function Navbar() {
           </Sheet>
         </div>
       </div>
+
+      <InvitationsDialog
+        open={invitationsOpen}
+        onOpenChange={setInvitationsOpen}
+      />
     </header>
   );
 }

@@ -1,6 +1,7 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import { cache } from "react";
 import { auth } from "@/lib/auth/server";
+import { ensurePersonalOrganization } from "@/lib/auth/organization";
 import superjson from "superjson";
 
 export const createTRPCContext = cache(async () => {
@@ -36,14 +37,13 @@ export const orgProcedure = baseProcedure.use(async ({ next }) => {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 
-  const { activeOrganizationId: orgId } = session.session;
-
-  if (!orgId) {
-    throw new TRPCError({
-      code: "FORBIDDEN",
-      message: "Organization required",
-    });
-  }
+  const orgId =
+    session.session.activeOrganizationId ??
+    (await ensurePersonalOrganization(
+      session.user.id,
+      session.user.name,
+      session.user.email,
+    ));
 
   return next({
     ctx: {
