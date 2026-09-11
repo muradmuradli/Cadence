@@ -6,6 +6,9 @@ import { useTRPC } from "@/trpc/client";
 import { Navbar } from "@/components/navbar";
 import { ScriptPanel } from "./_components/script-panel";
 import { SettingsPanel } from "./_components/settings-panel";
+import { SettingsDrawer } from "./_components/settings-drawer";
+import { HistoryDrawer } from "./_components/history-drawer";
+import { VoiceSelectorButton } from "./_components/voice-selector-button";
 import {
   TextToSpeechForm,
   type TTSFormValues,
@@ -85,7 +88,14 @@ export function TextToSpeechDetailView({
           </section>
 
           <TextToSpeechForm key={generationId} defaultValues={defaultValues}>
-            <div className="mt-10 grid gap-6 lg:grid-cols-[1.6fr_1fr]">
+            <div className="mt-10 flex items-center gap-2 md:hidden">
+              <SettingsDrawer>
+                <VoiceSelectorButton />
+              </SettingsDrawer>
+              <HistoryDrawer />
+            </div>
+
+            <div className="mt-4 grid gap-6 md:mt-10 lg:grid-cols-[1.6fr_1fr]">
               <div className="space-y-6">
                 <ScriptPanel />
                 <VoicePreviewPanel
