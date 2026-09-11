@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, DM_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "@/components/ui/sonner";
 import { TRPCReactProvider } from "@/trpc/client";
 
@@ -40,7 +41,7 @@ export default function RootLayout({
         className={`${bricolageGrotesque.variable} ${dmSans.variable} ${ibmPlexMono.variable} antialiased`}
       >
         <TRPCReactProvider>
-          {children}
+          <NuqsAdapter>{children}</NuqsAdapter>
           <Toaster />
         </TRPCReactProvider>
       </body>
