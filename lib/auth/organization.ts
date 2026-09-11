@@ -1,4 +1,5 @@
 import { TRPCError } from "@trpc/server";
+import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/lib/auth/server";
 
 // Every user gets a personal organization behind the scenes - there's no
@@ -37,6 +38,11 @@ export async function ensurePersonalOrganization(
     await auth.organization.setActive({ organizationId: retryExisting.id });
     return retryExisting.id;
   }
+
+  Sentry.logger.error("Failed to provision personal organization", {
+    userId,
+    error,
+  });
 
   throw new TRPCError({
     code: "INTERNAL_SERVER_ERROR",

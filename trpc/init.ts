@@ -1,5 +1,6 @@
 import { initTRPC, TRPCError } from "@trpc/server";
 import { cache } from "react";
+import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/lib/auth/server";
 import { ensurePersonalOrganization } from "@/lib/auth/organization";
 import superjson from "superjson";
@@ -15,8 +16,21 @@ const t = initTRPC
   });
 export const createTRPCRouter = t.router;
 export const createCallerFactory = t.createCallerFactory;
-export const baseProcedure = t.procedure;
-export const protectedProcedure = t.procedure.use(async ({ next }) => {
+
+const sentryMiddleware = t.middleware(async ({ path, type, next }) => {
+  const result = await next();
+
+  if (!result.ok) {
+    Sentry.captureException(result.error, {
+      tags: { trpcPath: path, trpcType: type },
+    });
+  }
+
+  return result;
+});
+
+export const baseProcedure = t.procedure.use(sentryMiddleware);
+export const protectedProcedure = baseProcedure.use(async ({ next }) => {
   const { data: session } = await auth.getSession();
   if (!session?.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });

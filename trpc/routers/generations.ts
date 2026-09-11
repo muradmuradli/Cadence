@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { and, desc, eq, or } from "drizzle-orm";
+import * as Sentry from "@sentry/nextjs";
 import { chatterbox } from "@/lib/chatterbox-client";
 import { db } from "@/lib/db";
 import { generation, voice } from "@/lib/db/schema";
@@ -91,6 +92,12 @@ export const generationsRouter = createTRPCRouter({
         });
       }
 
+      Sentry.logger.info("Requesting audio generation from Chatterbox", {
+        orgId: ctx.orgId,
+        voiceId: foundVoice.id,
+        textLength: input.text.length,
+      });
+
       const { data, error } = await chatterbox.POST("/generate", {
         body: {
           prompt: input.text,
@@ -105,6 +112,12 @@ export const generationsRouter = createTRPCRouter({
       });
 
       if (error) {
+        Sentry.logger.error("Chatterbox generate request failed", {
+          orgId: ctx.orgId,
+          voiceId: foundVoice.id,
+          error,
+        });
+
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to generate audio",
@@ -112,6 +125,11 @@ export const generationsRouter = createTRPCRouter({
       }
 
       if (!(data instanceof ArrayBuffer)) {
+        Sentry.logger.error("Chatterbox returned an unexpected response type", {
+          orgId: ctx.orgId,
+          voiceId: foundVoice.id,
+        });
+
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Invalid audio response",
@@ -143,7 +161,13 @@ export const generationsRouter = createTRPCRouter({
           .update(generation)
           .set({ s3ObjectKey })
           .where(eq(generation.id, created.id));
-      } catch {
+      } catch (uploadError) {
+        Sentry.logger.error("Failed to store generated audio, rolling back", {
+          orgId: ctx.orgId,
+          generationId: created.id,
+          error: uploadError,
+        });
+
         await db
           .delete(generation)
           .where(eq(generation.id, created.id))
@@ -154,6 +178,12 @@ export const generationsRouter = createTRPCRouter({
           message: "Failed to store generated audio",
         });
       }
+
+      Sentry.logger.info("Audio generation completed", {
+        orgId: ctx.orgId,
+        generationId: created.id,
+        voiceId: foundVoice.id,
+      });
 
       return {
         id: created.id,

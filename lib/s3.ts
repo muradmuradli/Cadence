@@ -5,6 +5,7 @@ import {
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import * as Sentry from "@sentry/nextjs";
 import { env } from "./env";
 
 const s3 = new S3Client({
@@ -26,23 +27,33 @@ export async function uploadAudio({
   key,
   contentType = "audio/wav",
 }: UploadAudioOptions): Promise<void> {
-  await s3.send(
-    new PutObjectCommand({
-      Bucket: env.S3_BUCKET_NAME,
-      Key: key,
-      Body: buffer,
-      ContentType: contentType,
-    }),
-  );
+  try {
+    await s3.send(
+      new PutObjectCommand({
+        Bucket: env.S3_BUCKET_NAME,
+        Key: key,
+        Body: buffer,
+        ContentType: contentType,
+      }),
+    );
+  } catch (error) {
+    Sentry.logger.error("S3 upload failed", { key, error });
+    throw error;
+  }
 }
 
 export async function deleteAudio(key: string): Promise<void> {
-  await s3.send(
-    new DeleteObjectCommand({
-      Bucket: env.S3_BUCKET_NAME,
-      Key: key,
-    }),
-  );
+  try {
+    await s3.send(
+      new DeleteObjectCommand({
+        Bucket: env.S3_BUCKET_NAME,
+        Key: key,
+      }),
+    );
+  } catch (error) {
+    Sentry.logger.error("S3 delete failed", { key, error });
+    throw error;
+  }
 }
 
 export async function getSignedAudioUrl(key: string): Promise<string> {

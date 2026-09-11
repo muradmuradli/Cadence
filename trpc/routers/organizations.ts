@@ -2,6 +2,7 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { and, eq, inArray } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
+import * as Sentry from "@sentry/nextjs";
 import { auth } from "@/lib/auth/server";
 import { ensurePersonalOrganization } from "@/lib/auth/organization";
 import { db } from "@/lib/db";
@@ -32,13 +33,18 @@ export const organizationsRouter = createTRPCRouter({
         name: z.string().trim().min(2).max(60),
       }),
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { data, error } = await auth.organization.create({
         name: input.name,
         slug: createId(),
       });
 
       if (error || !data) {
+        Sentry.logger.error("Failed to create organization", {
+          userId: ctx.user.id,
+          error,
+        });
+
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: error?.message ?? "Failed to create organization",
@@ -54,12 +60,18 @@ export const organizationsRouter = createTRPCRouter({
         organizationId: z.string().min(1),
       }),
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { error } = await auth.organization.setActive({
         organizationId: input.organizationId,
       });
 
       if (error) {
+        Sentry.logger.error("Failed to switch active organization", {
+          userId: ctx.user.id,
+          organizationId: input.organizationId,
+          error,
+        });
+
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: error.message ?? "Failed to switch organization",
@@ -91,6 +103,11 @@ export const organizationsRouter = createTRPCRouter({
       );
 
       if (error || !invitation) {
+        Sentry.logger.error("Failed to invite member", {
+          organizationId: input.organizationId,
+          error,
+        });
+
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: error?.message ?? "Failed to invite member",
@@ -167,6 +184,11 @@ export const organizationsRouter = createTRPCRouter({
       });
 
       if (error) {
+        Sentry.logger.error("Failed to accept invitation", {
+          invitationId: input.invitationId,
+          error,
+        });
+
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: error.message ?? "Failed to accept invitation",
@@ -198,6 +220,11 @@ export const organizationsRouter = createTRPCRouter({
       });
 
       if (error) {
+        Sentry.logger.error("Failed to reject invitation", {
+          invitationId: input.invitationId,
+          error,
+        });
+
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: error.message ?? "Failed to reject invitation",
