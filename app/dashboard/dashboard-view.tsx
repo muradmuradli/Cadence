@@ -1,21 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   BookOpen,
   Clapperboard,
-  Download,
   Gamepad2,
   Heart,
   Megaphone,
-  Pause,
-  Play,
-  RotateCcw,
   Sparkles,
 } from "lucide-react";
-import { Waveform, WaveLine } from "@/components/waveform";
+import { WaveLine } from "@/components/waveform";
 import { Navbar } from "@/components/navbar";
+import { LatestGeneration } from "./_components/latest-generation";
 
 const sample =
   "The city sounds different after midnight — fewer engines, more wind, and somewhere down the block, a radio nobody remembers turning on.";
@@ -62,8 +60,13 @@ const quickActions = [
 ];
 
 export function DashboardView() {
+  const router = useRouter();
   const [text, setText] = useState(sample);
-  const [playing, setPlaying] = useState(false);
+
+  const handleGenerate = () => {
+    if (!text.trim()) return;
+    router.push(`/text-to-speech?text=${encodeURIComponent(text)}`);
+  };
 
   return (
     <div className="relative min-h-screen bg-background">
@@ -98,8 +101,8 @@ export function DashboardView() {
               Script
             </span>
             <span className="font-mono text-xs text-muted-foreground">
-              {text.length.toLocaleString()}/{MAX_CHARS.toLocaleString()} chars · ~
-              {Math.max(1, Math.round(text.length / 14))}s
+              {text.length.toLocaleString()}/{MAX_CHARS.toLocaleString()}{" "}
+              chars · ~{Math.max(1, Math.round(text.length / 14))}s
             </span>
           </div>
           <textarea
@@ -113,75 +116,21 @@ export function DashboardView() {
           <WaveLine className="mt-4 text-primary/40" />
 
           <button
-            onClick={() => setPlaying(true)}
-            className="group mt-8 flex w-full cursor-pointer items-center justify-center gap-3 rounded-full bg-sonic px-8 py-4 font-display text-lg font-extrabold text-background transition-transform hover:scale-[1.01]"
+            onClick={handleGenerate}
+            disabled={!text.trim()}
+            className="group mt-8 flex w-full cursor-pointer items-center justify-center gap-3 rounded-full bg-sonic px-8 py-4 font-display text-lg font-extrabold text-background transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
           >
             <Sparkles className="h-5 w-5" />
             Generate
           </button>
         </div>
 
-        <section className="relative mt-14 overflow-hidden rounded-3xl border border-border bg-surface/70 p-7 backdrop-blur">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-magenta/20 blur-[100px]"
-          />
-          <div className="relative flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <p className="font-mono text-xs uppercase tracking-[0.3em] text-acid">
-                latest render
-              </p>
-              <h2 className="mt-2 font-display text-2xl font-extrabold">
-                Resonant Studio · 0:12
-              </h2>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <button className="flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap rounded-full border border-border px-4 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground">
-                <RotateCcw className="h-4 w-4" /> Regenerate
-              </button>
-              <button className="flex shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap rounded-full bg-acid px-5 py-2 text-sm font-bold text-acid-foreground">
-                <Download className="h-4 w-4" /> Download WAV
-              </button>
-            </div>
-          </div>
-
-          <div className="relative mt-7 flex items-center gap-5">
-            <button
-              onClick={() => setPlaying((p) => !p)}
-              className="flex h-16 w-16 shrink-0 cursor-pointer items-center justify-center rounded-full bg-sonic text-background transition-transform hover:scale-105"
-              aria-label={playing ? "Pause" : "Play"}
-            >
-              {playing ? (
-                <Pause className="h-6 w-6" />
-              ) : (
-                <Play className="ml-1 h-6 w-6" />
-              )}
-            </button>
-            <div className="h-20 min-w-0 flex-1 sm:h-24">
-              <Waveform
-                seed={4}
-                bars={36}
-                active={playing}
-                progress={playing ? 1 : 0.42}
-                tone="magenta"
-                className="sm:hidden"
-              />
-              <Waveform
-                seed={4}
-                bars={90}
-                active={playing}
-                progress={playing ? 1 : 0.42}
-                tone="magenta"
-                className="hidden sm:flex"
-              />
-            </div>
-          </div>
-          <div className="relative mt-3 flex justify-between font-mono text-xs text-muted-foreground">
-            <span>0:05</span>
-            <span className="truncate px-4 text-muted-foreground/70">
-              &ldquo;{text.slice(0, 70)}…&rdquo;
-            </span>
-            <span>0:12</span>
+        <section className="mt-14">
+          <p className="font-mono text-xs uppercase tracking-[0.3em] text-acid">
+            latest render
+          </p>
+          <div className="mt-4">
+            <LatestGeneration />
           </div>
         </section>
 

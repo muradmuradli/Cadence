@@ -13,10 +13,12 @@ export function VoicePreviewMobile({
   audioUrl,
   voice,
   text,
+  autoplay = true,
 }: {
   audioUrl: string;
   voice: PreviewVoice | null;
   text: string;
+  autoplay?: boolean;
 }) {
   const isMobile = useIsMobile();
   const selectedVoiceName = voice?.name ?? null;
@@ -39,16 +41,19 @@ export function VoicePreviewMobile({
 
     audio.pause();
     audio.currentTime = 0;
-    // Catch NotAllowedError when the browser blocks autoplay without user
-    // interaction - matches the desktop preview's autoplay behavior.
-    audio.play().catch(() => {});
+
+    if (autoplay) {
+      // Catch NotAllowedError when the browser blocks autoplay without user
+      // interaction - matches the desktop preview's autoplay behavior.
+      audio.play().catch(() => {});
+    }
 
     return () => {
       audio.removeEventListener("play", handlePlay);
       audio.removeEventListener("pause", handlePause);
       audio.removeEventListener("ended", handleEnded);
     };
-  }, [audioUrl]);
+  }, [audioUrl, autoplay]);
 
   useEffect(() => {
     if (!isMobile) {

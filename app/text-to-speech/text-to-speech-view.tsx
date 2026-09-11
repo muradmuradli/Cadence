@@ -5,7 +5,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTRPC } from "@/trpc/client";
 import { Navbar } from "@/components/navbar";
 import { ScriptPanel } from "./_components/script-panel";
-import { VoicePreviewPlaceholder } from "./_components/voice-preview-placeholder";
+import { VoicePreviewPlaceholder } from "@/components/voice-preview/voice-preview-placeholder";
 import { SettingsPanel } from "./_components/settings-panel";
 import { SettingsDrawer } from "./_components/settings-drawer";
 import { HistoryDrawer } from "./_components/history-drawer";

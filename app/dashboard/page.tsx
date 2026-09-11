@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DashboardView } from "./dashboard-view";
+import { trpc, HydrateClient, prefetch } from "@/trpc/server";
 
 export const metadata: Metadata = {
   title: "Dashboard — Cadence",
@@ -8,5 +9,11 @@ export const metadata: Metadata = {
 };
 
 export default function DashboardPage() {
-  return <DashboardView />;
+  prefetch(trpc.generations.getAll.queryOptions());
+
+  return (
+    <HydrateClient>
+      <DashboardView />
+    </HydrateClient>
+  );
 }

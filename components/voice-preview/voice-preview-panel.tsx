@@ -24,10 +24,12 @@ export function VoicePreviewPanel({
   audioUrl,
   voice,
   text,
+  autoplay = true,
 }: {
   audioUrl: string;
   voice: PreviewVoice | null;
   text: string;
+  autoplay?: boolean;
 }) {
   const [isDownloading, setIsDownloading] = useState(false);
   const selectedVoiceName = voice?.name ?? null;
@@ -44,7 +46,7 @@ export function VoicePreviewPanel({
     seekForward,
   } = useWaveSurfer({
     url: audioUrl,
-    autoplay: true,
+    autoplay,
   });
 
   const handleDownload = () => {

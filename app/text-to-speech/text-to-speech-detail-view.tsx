@@ -14,8 +14,8 @@ import {
   type TTSFormValues,
 } from "./_state/text-to-speech-form";
 import { TTSVoicesProvider } from "./_state/tts-voices-context";
-import { VoicePreviewPanel } from "./_components/voice-preview-panel";
-import { VoicePreviewMobile } from "./_components/voice-preview-mobile";
+import { VoicePreviewPanel } from "@/components/voice-preview/voice-preview-panel";
+import { VoicePreviewMobile } from "@/components/voice-preview/voice-preview-mobile";
 
 export function TextToSpeechDetailView({
   generationId,

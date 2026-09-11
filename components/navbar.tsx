@@ -37,9 +37,8 @@ import {
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard" },
-  { href: "/explore-voices", label: "Explore Voices" },
   { href: "/text-to-speech", label: "Text to Speech" },
-  { href: "/voice-cloning", label: "Voice Cloning" },
+  { href: "/voices", label: "Voice Cloning" },
 ];
 
 export function Navbar() {
