@@ -17,8 +17,8 @@ export function HistoryDrawer() {
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <Button variant="outline" size="sm">
-          <History className="size-4" />
+        <Button variant="outline" size="icon-lg" className="size-12">
+          <History className="size-5" />
         </Button>
       </DrawerTrigger>
       <DrawerContent>

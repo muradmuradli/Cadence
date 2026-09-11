@@ -6,6 +6,7 @@ import { WaveLine } from "@/components/waveform";
 import { COST_PER_UNIT, TEXT_MAX_LENGTH } from "@/lib/constants/values";
 import { useTypedAppFormContext } from "@/hooks/use-app-form";
 import { ttsFormOptions } from "../_state/text-to-speech-form";
+import { PromptSuggestions } from "./prompt-suggestions";
 
 export function ScriptPanel() {
   const form = useTypedAppFormContext(ttsFormOptions);
@@ -35,6 +36,14 @@ export function ScriptPanel() {
 
       {errors && errors.length > 0 && (
         <p className="mt-3 text-xs text-magenta">{String(errors[0])}</p>
+      )}
+
+      {!text && (
+        <div className="mt-4">
+          <PromptSuggestions
+            onSelect={(prompt) => form.setFieldValue("text", prompt)}
+          />
+        </div>
       )}
 
       <div className="mt-6 flex flex-wrap items-center justify-between gap-4">

@@ -25,8 +25,8 @@ export function VoiceSelectorButton() {
     <DrawerTrigger asChild>
       <Button
         variant="outline"
-        size="sm"
-        className="flex-1 justify-start gap-2 px-2"
+        size="lg"
+        className="h-12 flex-1 justify-start gap-2 px-3"
       >
         {currentVoice && (
           <VoiceAvatar seed={currentVoice.id} name={currentVoice.name} />
