@@ -2,6 +2,10 @@
 
 Cadence is a text-to-speech SaaS platform built on Next.js. It lets organizations generate natural-sounding speech from text using cloned or system voices, manage that audio, and collaborate across teams.
 
+## Demo
+
+[![Demo walkthrough](https://img.youtube.com/vi/M-FAFVMQ_tQ/maxresdefault.jpg)](https://youtu.be/M-FAFVMQ_tQ)
+
 ## Screenshots
 
 | Sign up | Text to speech studio | Create custom voice |

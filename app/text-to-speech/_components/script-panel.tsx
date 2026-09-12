@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { COST_PER_UNIT, TEXT_MAX_LENGTH } from "@/lib/constants/values";
 import { useTypedAppFormContext } from "@/hooks/use-app-form";
 import { useSimulatedProgress } from "@/hooks/use-simulated-progress";
-import { ttsFormOptions } from "../_state/text-to-speech-form";
+import { ttsFormOptions, useIsGenerationComplete } from "../_state/text-to-speech-form";
 import { PromptSuggestions } from "./prompt-suggestions";
 
 export function ScriptPanel() {
@@ -19,7 +19,10 @@ export function ScriptPanel() {
   // Rough estimate so longer scripts get a longer bar - there's no real
   // progress signal from the TTS backend to drive this off of.
   const estimatedMs = Math.min(20000, Math.max(4000, text.length * 90));
-  const progress = useSimulatedProgress(isSubmitting, estimatedMs);
+  const isComplete = useIsGenerationComplete();
+  const progress = useSimulatedProgress(isSubmitting, estimatedMs, {
+    complete: isComplete,
+  });
 
   return (
     <div className="rounded-2xl border border-border bg-surface/70 p-6 backdrop-blur">

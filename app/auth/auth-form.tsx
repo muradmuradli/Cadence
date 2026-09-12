@@ -16,6 +16,18 @@ import { FieldValues, useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 
+// Runs org-provisioning from a real Route Handler (safe to write cookies
+// there) right after auth succeeds, instead of leaving it to run for the
+// first time during a Server Component's prefetch (where it isn't safe).
+// Best-effort: orgProcedure still has its own fallback if this fails.
+async function ensurePersonalOrganization() {
+  try {
+    await fetch("/api/organizations/ensure-personal", { method: "POST" });
+  } catch {
+    // ignore - orgProcedure's own fallback covers this
+  }
+}
+
 function Field({
   label,
   type = "text",
@@ -132,6 +144,7 @@ export function AuthForm() {
           return;
         }
 
+        await ensurePersonalOrganization();
         router.push("/dashboard");
         return;
       }
@@ -152,6 +165,7 @@ export function AuthForm() {
         return;
       }
 
+      await ensurePersonalOrganization();
       router.push("/dashboard");
     } catch (err) {
       toast.error(

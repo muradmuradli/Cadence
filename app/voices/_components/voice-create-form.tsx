@@ -249,12 +249,14 @@ interface VoiceCreateFormProps {
   scrollable?: boolean;
   footer?: (submit: React.ReactNode) => React.ReactNode;
   onError?: (message: string) => void;
+  onSuccess?: () => void;
 }
 
 export function VoiceCreateForm({
   scrollable,
   footer,
   onError,
+  onSuccess,
 }: VoiceCreateFormProps) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -323,6 +325,7 @@ export function VoiceCreateForm({
           queryKey: trpc.voices.getAll.queryKey(),
         });
         form.reset();
+        onSuccess?.();
       } catch (error) {
         const message =
           error instanceof Error ? error.message : "Failed to create voice";

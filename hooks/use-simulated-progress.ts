@@ -4,13 +4,16 @@ import { useEffect, useRef, useState } from "react";
 
 // There's no real progress channel from the TTS backend (a single request/
 // response, no streaming). This animates a believable progress percentage
-// toward `cap` over `estimatedMs`, easing out so it never quite finishes on
-// its own - the caller flips `active` off once the real result comes back,
-// which is what actually completes the bar.
+// that asymptotically approaches `cap` the longer it runs, rather than
+// hard-stopping once `estimatedMs` elapses - actual generation time varies
+// far more than a text-length-based guess can predict, so a hard cutoff
+// just freezes the bar dead when a generation runs long. `complete` snaps
+// it to 100 once the caller knows the real result came back, instead of
+// leaving it hanging at `cap`.
 export function useSimulatedProgress(
   active: boolean,
   estimatedMs: number,
-  cap = 92,
+  { cap = 92, complete = false }: { cap?: number; complete?: boolean } = {},
 ) {
   const [progress, setProgress] = useState(0);
   const startRef = useRef<number | null>(null);
@@ -26,9 +29,9 @@ export function useSimulatedProgress(
 
     const tick = () => {
       const start = startRef.current ?? Date.now();
-      const t = Math.min(1, (Date.now() - start) / estimatedMs);
-      const eased = 1 - Math.pow(1 - t, 3);
-      setProgress(eased * cap);
+      const elapsed = Date.now() - start;
+      const eased = cap * (1 - Math.exp(-elapsed / estimatedMs));
+      setProgress(eased);
       frame = requestAnimationFrame(tick);
     };
 
@@ -36,5 +39,6 @@ export function useSimulatedProgress(
     return () => cancelAnimationFrame(frame);
   }, [active, estimatedMs, cap]);
 
+  if (complete) return 100;
   return active ? progress : 0;
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { toast } from "sonner";
 
 import {
@@ -36,14 +37,22 @@ export function VoiceCreateDialog({
   onOpenChange,
 }: VoiceCreateDialogProps) {
   const isMobile = useIsMobile();
+  const [internalOpen, setInternalOpen] = useState(false);
+
+  const isOpen = open ?? internalOpen;
+  const setOpen = onOpenChange ?? setInternalOpen;
 
   const handleError = (message: string) => {
     toast.error(message);
   };
 
+  const handleSuccess = () => {
+    setOpen(false);
+  };
+
   if (isMobile) {
     return (
-      <Drawer open={open} onOpenChange={onOpenChange}>
+      <Drawer open={isOpen} onOpenChange={setOpen}>
         {children && <DrawerTrigger asChild>{children}</DrawerTrigger>}
         <DrawerContent>
           <DrawerHeader>
@@ -56,6 +65,7 @@ export function VoiceCreateDialog({
           <VoiceCreateForm
             scrollable
             onError={handleError}
+            onSuccess={handleSuccess}
             footer={(submit) => (
               <DrawerFooter>
                 {submit}
@@ -71,7 +81,7 @@ export function VoiceCreateDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen} onOpenChange={setOpen}>
       {children && <DialogTrigger asChild>{children}</DialogTrigger>}
       <DialogContent>
         <DialogHeader className="text-left">
@@ -81,7 +91,7 @@ export function VoiceCreateDialog({
             library.
           </DialogDescription>
         </DialogHeader>
-        <VoiceCreateForm onError={handleError} />
+        <VoiceCreateForm onError={handleError} onSuccess={handleSuccess} />
       </DialogContent>
     </Dialog>
   );
