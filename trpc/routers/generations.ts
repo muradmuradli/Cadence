@@ -1,11 +1,11 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { and, desc, eq, or } from "drizzle-orm";
+import { and, desc, eq, ilike, or } from "drizzle-orm";
 import * as Sentry from "@sentry/nextjs";
 import { chatterbox } from "@/lib/chatterbox-client";
 import { db } from "@/lib/db";
 import { generation, voice } from "@/lib/db/schema";
-import { uploadAudio } from "@/lib/s3";
+import { deleteAudio, uploadAudio } from "@/lib/s3";
 import { TEXT_MAX_LENGTH } from "@/lib/constants/values";
 import { createTRPCRouter, orgProcedure } from "../init";
 
@@ -43,13 +43,25 @@ export const generationsRouter = createTRPCRouter({
       };
     }),
 
-  getAll: orgProcedure.query(async ({ ctx }) => {
-    return db
-      .select(generationColumns)
-      .from(generation)
-      .where(eq(generation.orgId, ctx.orgId))
-      .orderBy(desc(generation.createdAt));
-  }),
+  getAll: orgProcedure
+    .input(z.object({ query: z.string().trim().optional() }).optional())
+    .query(async ({ ctx, input }) => {
+      const rows = await db
+        .select(generationColumns)
+        .from(generation)
+        .where(
+          and(
+            eq(generation.orgId, ctx.orgId),
+            input?.query ? ilike(generation.text, `%${input.query}%`) : undefined,
+          ),
+        )
+        .orderBy(desc(generation.createdAt));
+
+      return rows.map((row) => ({
+        ...row,
+        audioUrl: `/api/audio/${row.id}`,
+      }));
+    }),
 
   create: orgProcedure
     .input(
@@ -188,5 +200,32 @@ export const generationsRouter = createTRPCRouter({
       return {
         id: created.id,
       };
+    }),
+
+  delete: orgProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const [existing] = await db
+        .select({ id: generation.id, s3ObjectKey: generation.s3ObjectKey })
+        .from(generation)
+        .where(
+          and(eq(generation.id, input.id), eq(generation.orgId, ctx.orgId)),
+        );
+
+      if (!existing) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Generation not found",
+        });
+      }
+
+      await db.delete(generation).where(eq(generation.id, existing.id));
+
+      if (existing.s3ObjectKey) {
+        // In production, consider background jobs, retries, cron jobs etc.
+        await deleteAudio(existing.s3ObjectKey).catch(() => {});
+      }
+
+      return { success: true };
     }),
 });

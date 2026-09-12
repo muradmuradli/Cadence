@@ -169,6 +169,7 @@ export function VoiceCard({ voice }: VoiceCardProps) {
                 </AlertDialogCancel>
                 <AlertDialogAction
                   variant="destructive"
+                  className="bg-destructive! text-white! hover:bg-destructive/90!"
                   disabled={deleteMutation.isPending}
                   onClick={(e: React.MouseEvent) => {
                     e.preventDefault();

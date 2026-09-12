@@ -3,8 +3,10 @@
 import { Sparkles } from "lucide-react";
 import { useSelector } from "@tanstack/react-form";
 import { WaveLine } from "@/components/waveform";
+import { cn } from "@/lib/utils";
 import { COST_PER_UNIT, TEXT_MAX_LENGTH } from "@/lib/constants/values";
 import { useTypedAppFormContext } from "@/hooks/use-app-form";
+import { useSimulatedProgress } from "@/hooks/use-simulated-progress";
 import { ttsFormOptions } from "../_state/text-to-speech-form";
 import { PromptSuggestions } from "./prompt-suggestions";
 
@@ -13,6 +15,11 @@ export function ScriptPanel() {
   const text = useSelector(form.store, (s) => s.values.text);
   const isSubmitting = useSelector(form.store, (s) => s.isSubmitting);
   const errors = useSelector(form.store, (s) => s.fieldMeta.text?.errors);
+
+  // Rough estimate so longer scripts get a longer bar - there's no real
+  // progress signal from the TTS backend to drive this off of.
+  const estimatedMs = Math.min(20000, Math.max(4000, text.length * 90));
+  const progress = useSimulatedProgress(isSubmitting, estimatedMs);
 
   return (
     <div className="rounded-2xl border border-border bg-surface/70 p-6 backdrop-blur">
@@ -58,12 +65,24 @@ export function ScriptPanel() {
             type="button"
             onClick={() => form.handleSubmit()}
             disabled={!text.trim() || isSubmitting}
-            className="flex cursor-pointer items-center gap-2 rounded-full bg-sonic px-7 py-3 font-display text-base font-extrabold text-background transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
+            className={cn(
+              "relative flex cursor-pointer items-center gap-2 overflow-hidden rounded-full bg-sonic px-7 py-3 font-display text-base font-extrabold text-background transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:hover:scale-100",
+              !isSubmitting && "disabled:opacity-60",
+            )}
           >
-            <Sparkles
-              className={`h-4 w-4 ${isSubmitting ? "animate-pulse" : ""}`}
-            />
-            {isSubmitting ? "Generating…" : "Generate"}
+            {isSubmitting && (
+              <span
+                aria-hidden
+                className="absolute inset-y-0 left-0 bg-background/20 transition-[width] duration-200 ease-out"
+                style={{ width: `${progress}%` }}
+              />
+            )}
+            <span className="relative flex items-center gap-2 tabular-nums">
+              <Sparkles
+                className={`h-4 w-4 ${isSubmitting ? "animate-pulse" : ""}`}
+              />
+              {isSubmitting ? `Generating… ${Math.round(progress)}%` : "Generate"}
+            </span>
           </button>
         </div>
       </div>

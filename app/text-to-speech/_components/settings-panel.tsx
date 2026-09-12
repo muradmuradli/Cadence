@@ -10,7 +10,7 @@ export function SettingsPanel() {
   const [tab, setTab] = useState<Tab>("settings");
 
   return (
-    <aside className="hidden h-fit rounded-2xl border border-border bg-surface/70 p-6 backdrop-blur md:block">
+    <aside className="hidden h-fit min-w-0 rounded-2xl border border-border bg-surface/70 p-6 backdrop-blur md:block">
       <div className="flex gap-1 rounded-full bg-surface-2 p-1">
         {(["settings", "history"] as const).map((t) => (
           <button

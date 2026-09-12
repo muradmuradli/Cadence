@@ -39,6 +39,7 @@ const navItems = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/text-to-speech", label: "Text to Speech" },
   { href: "/voices", label: "Voice Cloning" },
+  { href: "/generations", label: "Generations" },
 ];
 
 export function Navbar() {

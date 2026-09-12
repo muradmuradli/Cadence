@@ -67,7 +67,7 @@ export function VoicePreviewPanel({
           <div className="absolute inset-0 z-10 flex items-center justify-center">
             <Badge
               variant="outline"
-              className="gap-2 bg-background/90 px-3 py-1.5 text-sm text-muted-foreground shadow-sm"
+              className="h-auto gap-2 bg-background/90 px-4 py-2 text-sm text-muted-foreground shadow-sm"
             >
               <Spinner className="size-4" />
               <span>Loading audio...</span>

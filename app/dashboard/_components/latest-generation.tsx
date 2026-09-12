@@ -19,19 +19,18 @@ export function LatestGeneration() {
     return <VoicePreviewPlaceholder />;
   }
 
-  const audioUrl = `/api/audio/${latest.id}`;
   const voice = { id: latest.voiceId ?? undefined, name: latest.voiceName };
 
   return (
     <>
       <VoicePreviewPanel
-        audioUrl={audioUrl}
+        audioUrl={latest.audioUrl}
         voice={voice}
         text={latest.text}
         autoplay={false}
       />
       <VoicePreviewMobile
-        audioUrl={audioUrl}
+        audioUrl={latest.audioUrl}
         voice={voice}
         text={latest.text}
         autoplay={false}
